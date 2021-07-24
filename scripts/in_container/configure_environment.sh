@@ -23,8 +23,11 @@ TMUX_CONF_FILE=".tmux.conf"
 
 if [[ -d "${FILES_DIR}" ]]; then
     export AIRFLOW__CORE__DAGS_FOLDER="/files/dags"
+    export AIRFLOW__CORE__PLUGINS_FOLDER="/files/plugins"
     mkdir -pv "${AIRFLOW__CORE__DAGS_FOLDER}"
+    mkdir -pv "${AIRFLOW__CORE__PLUGINS_FOLDER}"
     sudo chown "${HOST_USER_ID}":"${HOST_GROUP_ID}" "${AIRFLOW__CORE__DAGS_FOLDER}"
+    sudo chown "${HOST_USER_ID}":"${HOST_GROUP_ID}" "${AIRFLOW__CORE__PLUGINS_FOLDER}"
     echo "Your dags for webserver and scheduler are read from ${AIRFLOW__CORE__DAGS_FOLDER} directory"
     echo "which is mounted from your <AIRFLOW_SOURCES>/files/dags folder"
     echo

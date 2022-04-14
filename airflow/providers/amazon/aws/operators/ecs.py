@@ -370,8 +370,7 @@ class EcsOperator(BaseOperator):
             raise EcsOperatorError(failures, response)
         self.log.info('ECS Task started: %s', response)
 
-        self.arn = response['tasks'][0]['taskArn']
-        self.ecs_task_id = self.arn.split("/")[-1]
+        self._set_arn(response['tasks'][0]['taskArn'])
         self.log.info(f"ECS task ID is: {self.ecs_task_id}")
 
         if self.reattach:
@@ -382,6 +381,10 @@ class EcsOperator(BaseOperator):
                 value=self.arn,
                 task_id=self.REATTACH_XCOM_TASK_ID_TEMPLATE.format(task_id=self.task_id),
             )
+
+    def _set_arn(self, arn):
+        self.arn = arn
+        self.ecs_task_id = self.arn.split("/")[-1]
 
     def _xcom_set(self, context, key, value, task_id):
         XCom.set(
@@ -408,7 +411,7 @@ class EcsOperator(BaseOperator):
             key=self.REATTACH_XCOM_KEY,
         )
         if previous_task_arn in running_tasks:
-            self.arn = previous_task_arn
+            self._set_arn(previous_task_arn)
             self.log.info("Reattaching previously launched task: %s", self.arn)
         else:
             self.log.info("No active previously launched task found to reattach")
